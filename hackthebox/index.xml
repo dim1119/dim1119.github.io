@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Terminal</title>
-    <link>/</link>
-    <description>Recent content on Terminal</description>
+    <title>HackTheboxes on Terminal</title>
+    <link>/hackthebox/</link>
+    <description>Recent content in HackTheboxes on Terminal</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 01 Apr 2021 17:04:59 +0300</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 01 Apr 2021 17:04:59 +0300</lastBuildDate><atom:link href="/hackthebox/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Bastion</title>
       <link>/hackthebox/bastion/</link>
@@ -399,17 +399,6 @@ We notice that this is probably a cronjob since the &lt;code&gt;input&lt;/code&g
 &lt;p&gt;&lt;img src=&#34;/htb/2a236ba8498a40f09c9a1bf906d3f983.png&#34; alt=&#34;6a11a0a0467303b28204eb2185c40f18.png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;And we get the root flag.
 root.txt:&lt;code&gt;82c198ab6fc5365fdc6da2ee5c26064a&lt;/code&gt;&lt;/p&gt;
-</content>
-    </item>
-    
-    <item>
-      <title>My First Post</title>
-      <link>/posts/my-first-post/</link>
-      <pubDate>Wed, 31 Mar 2021 01:10:51 +0300</pubDate>
-      
-      <guid>/posts/my-first-post/</guid>
-      <description>Hello and welcome to my blog! Just testing the capabilities of Hugo. In the future I am planning to update the blog with HackTheBox machine and challenge writeups, CTF writeups and security related blog posts.</description>
-      <content>&lt;p&gt;Hello and welcome to my blog! Just testing the capabilities of Hugo. In the future I am planning to update the blog with HackTheBox machine and challenge writeups, CTF writeups and security related blog posts.&lt;/p&gt;
 </content>
     </item>
     

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+    <title>Mirai :: Terminal</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Linux - Easy Machine" />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="/hackthebox/mirai/" />
+
+
+
+
+<link rel="stylesheet" href="/assets/style.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon" href="/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="/img/favicon/orange.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+  
+    <meta name="twitter:site" content="" />
+  
+    <meta name="twitter:creator" content="" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Mirai">
+<meta property="og:description" content="Linux - Easy Machine" />
+<meta property="og:url" content="/hackthebox/mirai/" />
+<meta property="og:site_name" content="Terminal" />
+
+  
+    <meta property="og:image" content="/img/favicon/orange.png">
+  
+
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+
+  <meta property="article:published_time" content="2021-04-01 17:04:25 &#43;0300 EEST" />
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body class="orange">
+
+
+<div class="container center headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    Terminal
+  </div>
+</a>
+
+    </div>
+    
+      <div class="menu-trigger">menu</div>
+    
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/ctf">CTF</a></li>
+        
+      
+        
+          <li><a href="/hackthebox">HackTheBox</a></li>
+        
+      
+        
+          <li><a href="/showcase">Showcase</a></li>
+        
+      
+      
+    
+
+    
+  </ul>
+
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/about">About</a></li>
+      
+    
+      
+        <li><a href="/ctf">CTF</a></li>
+      
+    
+      
+        <li><a href="/hackthebox">HackTheBox</a></li>
+      
+    
+      
+        <li><a href="/showcase">Showcase</a></li>
+      
+    
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="post">
+  <h1 class="post-title">
+    <a href="/hackthebox/mirai/">Mirai</a></h1>
+  <div class="post-meta">
+    
+      <span class="post-date">
+        2021-04-01 
+      </span>
+    
+    
+  </div>
+
+  
+
+  
+
+  
+
+  <div class="post-content"><div>
+        <p><img src="/htb/3784ff8e06d04f44a36f054fb0ae0afe.png" alt="94b0478942e1eefe5f77a3581275f4eb.png"></p>
+<h1 id="enumeration">Enumeration<a href="#enumeration" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<p>We will start with an nmap scan of the machine:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ nmap -sC -sV 10.129.70.227
+Starting Nmap 7.80 <span style="color:#f92672">(</span> https://nmap.org <span style="color:#f92672">)</span> at 2020-12-21 16:24 UTC
+Nmap scan report <span style="color:#66d9ef">for</span> 10.129.70.227
+Host is up <span style="color:#f92672">(</span>0.023s latency<span style="color:#f92672">)</span>.
+Not shown: <span style="color:#ae81ff">996</span> closed ports
+PORT     STATE SERVICE VERSION
+22/tcp   open  ssh     OpenSSH 6.7p1 Debian 5+deb8u3 <span style="color:#f92672">(</span>protocol 2.0<span style="color:#f92672">)</span>
+| ssh-hostkey: 
+|   <span style="color:#ae81ff">1024</span> aa:ef:5c:e0:8e:86:97:82:47:ff:4a:e5:40:18:90:c5 <span style="color:#f92672">(</span>DSA<span style="color:#f92672">)</span>
+|   <span style="color:#ae81ff">2048</span> e8:c1:9d:c5:43:ab:fe:61:23:3b:d7:e4:af:9b:74:18 <span style="color:#f92672">(</span>RSA<span style="color:#f92672">)</span>
+|   <span style="color:#ae81ff">256</span> b6:a0:78:38:d0:c8:10:94:8b:44:b2:ea:a0:17:42:2b <span style="color:#f92672">(</span>ECDSA<span style="color:#f92672">)</span>
+|_  <span style="color:#ae81ff">256</span> 4d:68:40:f7:20:c4:e5:52:80:7a:44:38:b8:a2:a7:52 <span style="color:#f92672">(</span>ED25519<span style="color:#f92672">)</span>
+53/tcp   open  domain  dnsmasq 2.76
+| dns-nsid: 
+|_  bind.version: dnsmasq-2.76
+80/tcp   open  http    lighttpd 1.4.35
+|_http-server-header: lighttpd/1.4.35
+|_http-title: Site doesn<span style="color:#960050;background-color:#1e0010">&#39;</span>t have a title <span style="color:#f92672">(</span>text/html; charset<span style="color:#f92672">=</span>UTF-8<span style="color:#f92672">)</span>.
+1132/tcp open  upnp    Platinum UPnP 1.0.5.13 <span style="color:#f92672">(</span>UPnP/1.0 DLNADOC/1.50<span style="color:#f92672">)</span>
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap <span style="color:#66d9ef">done</span>: <span style="color:#ae81ff">1</span> IP address <span style="color:#f92672">(</span><span style="color:#ae81ff">1</span> host up<span style="color:#f92672">)</span> scanned in 20.40 seconds
+</code></pre></div><p>We notice that there is an SSH service running, a DNS caching server (dnsmasq), a webpage (lighttpd) and a upnp service.</p>
+<p>We used some common subdirectory names such as administrator, robots.txt and admin and found this landing page at <code>/admin</code>:</p>
+<p><img src="/htb/549bee1b286848bfae8322a7627c831a.png" alt="340aa674a723210f76961f9665096f4b.png"></p>
+<p>Pihole is a DNS ad blocker that is designed for raspberry pi devices. Raspberry pi has default credentials <code>pi</code>:<code>raspberry</code>. We can try to login with the password <code>raspberry</code>, but it fails.</p>
+<h1 id="ssh-using-the-pi-account">SSH using the pi account<a href="#ssh-using-the-pi-account" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<p>We can try to login into ssh with the default credentials.:
+<img src="/htb/6c1629537def44568bfe6831edd0e6b1.png" alt="ca5a340c41762e562d0b5b47cb31d5f7.png"></p>
+<p>We currently are user <code>pi</code>.</p>
+<p>And we get user.txt:
+<img src="/htb/8aa45ca164ba4d7c8ce918c14eba308a.png" alt="229ea9c83663f54e43e61a7a8026e3d4.png"></p>
+<p>user.txt:<code>ff837707441b257a20e32199d7c8838d</code></p>
+<h1 id="privilege-escalation">Privilege Escalation<a href="#privilege-escalation" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<p>We now need to priviledge escalate to root. We can run <code>sudo -l</code> to check what commands can be run by the user with root permission.</p>
+<p><img src="/htb/ce7ead7154994f4682799bf918968f1d.png" alt="38616ea6b389139cdeb7d70464f13664.png"></p>
+<p>All commands can be run with sudo, so lets create a shell using <code>sudo -i</code>:
+<img src="/htb/b92932ea45a84c2ea69f76595184cc28.png" alt="5d49ccbb7c2f007cb485b1c4687b0888.png"></p>
+<p>Unfortunately root.txt has been lost and a backup may exist on a USB stick.</p>
+<h1 id="searching-for-the-deleted-roottxt">Searching for the deleted root.txt<a href="#searching-for-the-deleted-roottxt" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<p>We should check <code>lost+found</code> for deleted files.</p>
+<p>The <code>lost+found</code> folder is occupied by unlinked files that while they were deleted the system crashed. In our case no files were found:
+<img src="/htb/269d5a77e4c3418f8db0c038ee43686a.png" alt="3b31dbb29ccb86e96176135cfb6df927.png"></p>
+<p>We can look at /mnt to see if a USB stick is attached:
+<img src="/htb/587d7926d72d4d0f9f4e522515c96aee.png" alt="131efb1f1aa1858a51c97c6a1563dd9b.png"></p>
+<p>Unfortunately no external storage device is mounted to /mnt. Lets run <code>lsblk</code> to show all partitions connected to the file system:
+<img src="/htb/6f9b82fce25f4e6ab57fd2a961003ec6.png" alt="bc3778bb9e02fc0a7ce8200728061ff7.png"></p>
+<p>It turns out that the USB stick is mounted under <code>/media/usbstick</code>.
+<img src="/htb/930c559e68a042b5a50a00bc86e48672.png" alt="9c0cab56cbd3e6d0bd443970f689613f.png">
+The file has been deleted from the USB Stick, so lets try to recover it.
+The usb stick has been assigned the name <code>sdb</code>.</p>
+<p>The data block <code>/dev/sdb</code> is assigned to the USB . Lets search for ASCII data inside the block. If we use strings on the file, we get the root flag. In our case <code>cat /dev/sdb</code> simply worked.
+<img src="/htb/3dfb3ea61dcf40978bcc8a4ccfc3afc6.png" alt="400b4c6a0a86c9b1ad989c51f625bbe8.png"></p>
+<p>root.txt:<code>3d3e483143ff12ec505d026fa13e020b</code></p>
+
+      </div></div>
+
+  
+
+  
+
+</div>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2021 Powered by <a href="http://gohugo.io">Hugo</a></span>
+    
+        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
+      </div>
+  </div>
+</footer>
+
+<script src="/assets/main.js"></script>
+<script src="/assets/prism.js"></script>
+
+
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

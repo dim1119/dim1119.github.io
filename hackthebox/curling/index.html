@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+    <title>Curling :: Terminal</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Linux - Easy Machine" />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="/hackthebox/curling/" />
+
+
+
+
+<link rel="stylesheet" href="/assets/style.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon" href="/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="/img/favicon/orange.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+  
+    <meta name="twitter:site" content="" />
+  
+    <meta name="twitter:creator" content="" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Curling">
+<meta property="og:description" content="Linux - Easy Machine" />
+<meta property="og:url" content="/hackthebox/curling/" />
+<meta property="og:site_name" content="Terminal" />
+
+  
+    <meta property="og:image" content="/img/favicon/orange.png">
+  
+
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+
+  <meta property="article:published_time" content="2021-04-01 17:04:19 &#43;0300 EEST" />
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body class="orange">
+
+
+<div class="container center headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    Terminal
+  </div>
+</a>
+
+    </div>
+    
+      <div class="menu-trigger">menu</div>
+    
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/ctf">CTF</a></li>
+        
+      
+        
+          <li><a href="/hackthebox">HackTheBox</a></li>
+        
+      
+        
+          <li><a href="/showcase">Showcase</a></li>
+        
+      
+      
+    
+
+    
+  </ul>
+
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/about">About</a></li>
+      
+    
+      
+        <li><a href="/ctf">CTF</a></li>
+      
+    
+      
+        <li><a href="/hackthebox">HackTheBox</a></li>
+      
+    
+      
+        <li><a href="/showcase">Showcase</a></li>
+      
+    
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="post">
+  <h1 class="post-title">
+    <a href="/hackthebox/curling/">Curling</a></h1>
+  <div class="post-meta">
+    
+      <span class="post-date">
+        2021-04-01 
+      </span>
+    
+    
+  </div>
+
+  
+
+  
+
+  
+
+  <div class="post-content"><div>
+        <p><img src="/htb/d4ac30640dff4503a64dc77f623a65e8.png" alt="d4ac30640dff4503a64dc77f623a65e8.png"></p>
+<h1 id="enumeration">Enumeration<a href="#enumeration" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<p>First of all lets use nmap to scan the machine:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ nmap -sC -sV  10.129.58.119            
+Starting Nmap 7.91 <span style="color:#f92672">(</span> https://nmap.org <span style="color:#f92672">)</span> at 2020-12-01 05:27 EST
+Stats: 0:00:11 elapsed; <span style="color:#ae81ff">0</span> hosts completed <span style="color:#f92672">(</span><span style="color:#ae81ff">1</span> up<span style="color:#f92672">)</span>, <span style="color:#ae81ff">1</span> undergoing Script Scan
+NSE Timing: About 99.28% <span style="color:#66d9ef">done</span>; ETC: 05:27 <span style="color:#f92672">(</span>0:00:00 remaining<span style="color:#f92672">)</span>
+Nmap scan report <span style="color:#66d9ef">for</span> 10.129.58.119
+Host is up <span style="color:#f92672">(</span>0.096s latency<span style="color:#f92672">)</span>.
+Not shown: <span style="color:#ae81ff">998</span> closed ports
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 7.6p1 Ubuntu <span style="color:#ae81ff">4</span> <span style="color:#f92672">(</span>Ubuntu Linux; protocol 2.0<span style="color:#f92672">)</span>
+| ssh-hostkey: 
+|   <span style="color:#ae81ff">2048</span> 8a:d1:69:b4:90:20:3e:a7:b6:54:01:eb:68:30:3a:ca <span style="color:#f92672">(</span>RSA<span style="color:#f92672">)</span>
+|   <span style="color:#ae81ff">256</span> 9f:0b:c2:b2:0b:ad:8f:a1:4e:0b:f6:33:79:ef:fb:43 <span style="color:#f92672">(</span>ECDSA<span style="color:#f92672">)</span>
+|_  <span style="color:#ae81ff">256</span> c1:2a:35:44:30:0c:5b:56:6a:3f:a5:cc:64:66:d9:a9 <span style="color:#f92672">(</span>ED25519<span style="color:#f92672">)</span>
+80/tcp open  http    Apache httpd 2.4.29 <span style="color:#f92672">((</span>Ubuntu<span style="color:#f92672">))</span>
+|_http-generator: Joomla! - Open Source Content Management
+|_http-server-header: Apache/2.4.29 <span style="color:#f92672">(</span>Ubuntu<span style="color:#f92672">)</span>
+|_http-title: Home
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+</code></pre></div><h4 id="joomla-enumeration">Joomla Enumeration<a href="#joomla-enumeration" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<p>If we use google we can find that the admin page for joomla is at <code>/administator</code> :
+<img src="/htb/9836793dc64b4d608935dc8402ef49af.png" alt="e7e545304b2fa4abc15b27ff74ac64a7.png"></p>
+<p>Moreover we can use <code>administrator/manifests/files/joomla.xml</code> to find the Joomla version.
+<img src="/htb/7b91b706167944dc8718eb8731ea76f7.png" alt="6a911c1a17746c578919d3d4bfdf19ba.png">
+We can see the files of the server too.
+<img src="/htb/e6d92f9a5a054179a969df9fa1f7189d.png" alt="3b1601e4abbf4d8a22a1ec2686677dc2.png"></p>
+<p>While searching for exploits I found CVE-2018-12712. But it is for privesc, so we might use that later.</p>
+<h4 id="secrettxt-file">secret.txt file<a href="#secrettxt-file" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<p>If we check the code of the main page we can find:
+<img src="/htb/40bcb9e691e240bd9201e112fb1e0a24.png" alt="d5bee1e0345ea1c1c6ee313054f618c2.png"></p>
+<p>Lets visit /secret.txt:
+<img src="/htb/fd5eadba91e9455b8b2f58558d957766.png" alt="0b878adadadec1b458d9af3f043fd237.png"></p>
+<p>It seems like a hash. After some searching I found that it is a base64 hash, decoded: <code>Curling2018!</code>
+<img src="/htb/5707916f703a4815af2647c30dc50e76.png" alt="bf02ba914256eee3d5a661aac22a59a3.png"></p>
+<h4 id="username-find-via-the-blog-and-admin-login">Username Find via the blog and admin login<a href="#username-find-via-the-blog-and-admin-login" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<p>Ιf we search the blog posts we see that someone named <code>Floris</code> posts content:
+<img src="/htb/6612a0f22cb34c75868553b4a50e05d8.png" alt="94de080494d7bb2e05a42733baa8a2d2.png">
+<em>(Also subtle hint for password)</em></p>
+<p>We can login in <code>/administrator/</code> using username <code>Floris</code> and password <code>Curling2018!</code> . We are &ldquo;Super User&rdquo;.
+<img src="/htb/0ab79bb632ae451b9e95d9aa9727a076.png" alt="64a49d847a155b9b145c30924d07112e.png"></p>
+<h1 id="reverse-shell-with-php-code">Reverse shell with PHP code<a href="#reverse-shell-with-php-code" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<p>Now lets get a reverse shell. First of all go to the Templates menu:
+<img src="/htb/d6208101424a456ab0f8292a02c5cd75.png" alt="6e899eb11aec86617ccc612e7f82f86a.png"></p>
+<p>Then select a template and add a new file. I created <code>about.php</code> containing a <a href="https://github.com/pentestmonkey/php-reverse-shell/blob/master/php-reverse-shell.php">php shell</a>:
+<img src="/htb/1b8d711796ac40d9ad58425d129e1767.png" alt="d800da04de39c2ca91fb3536f4f5c856.png"></p>
+<p>Then open a listener (<code>nc -nvlp 4477</code>) and visit the URL:
+<img src="/htb/afa0d4d413924c5388f9a6970378b832.png" alt="d35792bdfeb25c2de532bd38e639694b.png">
+<img src="/htb/684fcd5b4ce34c478bc8a256b36bc7a9.png" alt="65dd02976c1d8307cfd9cc5f17a78228.png"></p>
+<h1 id="uncompressing-password_backup">Uncompressing password_backup<a href="#uncompressing-password_backup" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<p>When we get in the user directory we see a <code>password_backup</code> file. Lets download it in our computer.
+<img src="/htb/e4d7dc84c786483c9cf76e53c52023cd.png" alt="f3f459d381516a0ccf7851d8cabd835b.png"></p>
+<p>Lets reverse the hexdump using <code>xxd -r password backup</code>. So this file is compressed multiple times with different algorithms (gzip,tar,bzip2). Lets uncompress all of them. Using the command file <em>file</em> we can see the type of archive and use the extract command needed for this type of file. The original file:</p>
+<p><img src="/htb/35aca7f47d5f4f6d9d34dfd6447de687.png" alt="4685a47d7d9924eec2d16279efde6bc3.png"></p>
+<p>Lets use this pass to login via ssh (<code>floris</code>:<code>5d&lt;wdCbdZu)|hChXll</code>):
+<img src="/htb/bf23352bc8404a988394d869752ad4b3.png" alt="6dd1741485652a5ff061e3b1bd99be1e.png"></p>
+<p>Great, we now have access as <code>floris</code>.</p>
+<h1 id="privilege-escalation">Privilege Escalation<a href="#privilege-escalation" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<p>In our user directory we notice a weird folder named <code>admin-area</code>:
+<img src="/htb/a1ebb755947f4ddbb73fa155e436a070.png" alt="d264cefcb0b33d2bb4020efcb57a0ef9.png"></p>
+<p>We can write in input with our user and the contents will be read by root  🤔.</p>
+<p>To enumerate the system we can use linpeas.sh:
+<img src="/htb/bd186349a3034b048283353e33cedaef.png" alt="0b1c2aff298ae0267ed335aaca6ea7fb.png"></p>
+<p>Some interesting info showed up but lets go more in depth in the weird folder <code>admin-area</code>. In the <code>input</code> file a url is being defined:
+<img src="/htb/87b2035b348e4673b5d53d31a6b891c0.png" alt="2a8e24400684cff0c462df0a055580e9.png"></p>
+<p>The <code>report</code> is the result. If we open the file we notice that a web page is being download. Could the name of the machine (&quot;<em>Curling</em>&quot;) be a reference to the curl command?</p>
+<p>Well the answer is yes.
+We notice that this is probably a cronjob since the <code>input</code> file gets refreshed&hellip;</p>
+<p>What we see in the report is the result of a curl command with the <code>url</code> in file <code>input</code>. We can grab remote files, but can we grab a local one?</p>
+<p>It turns out that in linux you get a local file with the prefix:<code>file:///</code>. So <code>url = &quot;file:///root/root.txt&quot;</code> should work right?</p>
+<p><img src="/htb/22ee47757239454cb01efba4a6f8cb63.png" alt="f2861164726786a63c5b812a08911410.png"></p>
+<p>Lets wait a bit&hellip;</p>
+<p><img src="/htb/2a236ba8498a40f09c9a1bf906d3f983.png" alt="6a11a0a0467303b28204eb2185c40f18.png"></p>
+<p>And we get the root flag.
+root.txt:<code>82c198ab6fc5365fdc6da2ee5c26064a</code></p>
+
+      </div></div>
+
+  
+
+  
+
+</div>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2021 Powered by <a href="http://gohugo.io">Hugo</a></span>
+    
+        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
+      </div>
+  </div>
+</footer>
+
+<script src="/assets/main.js"></script>
+<script src="/assets/prism.js"></script>
+
+
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>
