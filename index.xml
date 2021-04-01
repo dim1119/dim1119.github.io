@@ -13,8 +13,9 @@
       <pubDate>Wed, 31 Mar 2021 01:10:51 +0300</pubDate>
       
       <guid>/posts/my-first-post/</guid>
-      <description></description>
-      <content></content>
+      <description>Hello and welcome to my blog! Just testing the capabilities of Hugo. In the future I am planning to update the blog with HackTheBox machine and challenge writeups, CTF writeups and security related blog posts.</description>
+      <content>&lt;p&gt;Hello and welcome to my blog! Just testing the capabilities of Hugo. In the future I am planning to update the blog with HackTheBox machine and challenge writeups, CTF writeups and security related blog posts.&lt;/p&gt;
+</content>
     </item>
     
   </channel>
