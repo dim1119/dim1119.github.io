@@ -237,12 +237,10 @@ Host script results:
 Nmap &lt;span style=&#34;color:#66d9ef&#34;&gt;done&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; IP address &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; host up&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; scanned in 2.03 seconds
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;exploitation-with-eternal-blue&#34;&gt;Exploitation with Eternal Blue&lt;/h1&gt;
 &lt;p&gt;Using metasploit we can select the eternal blue exploit (exploit/windows/smb/ms17_010_eternalblue).
-After setting the rhost,lhost and typing run we get a meterpreter session.
-&lt;img src=&#34;/htb/78b1972867d14c62b4801e21b1a5613f.png&#34; alt=&#34;6cdc9c079bad7ed10c63a048f189e503.png&#34;&gt;&lt;/p&gt;
-&lt;p&gt;We get directly a shell as system&amp;hellip;
-&lt;img src=&#34;/htb/03705051c7ca462b9744c846f29b534b.png&#34; alt=&#34;3f98b57a2d57685f55697de7d7f2ee5c.png&#34;&gt;&lt;/p&gt;
+After setting the rhost,lhost and typing run we successfully get a meterpreter session and shell as system&amp;hellip;&lt;/p&gt;
 &lt;p&gt;And get of both flags:
-&lt;img src=&#34;/htb/1dd4fbc87cb248afad8bae5cb3a2f7a7.png&#34; alt=&#34;5daf5f2cd9227777cbb3accbaa883bc1.png&#34;&gt;&lt;/p&gt;
+&lt;img src=&#34;/htb/25cc0c8696304de78e9c3c8f37fa100c.png&#34; alt=&#34;00c7f887d5c8fec0f86ce7c48f3aeecc.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/htb/1dd4fbc87cb248afad8bae5cb3a2f7a7.png&#34; alt=&#34;5daf5f2cd9227777cbb3accbaa883bc1.png&#34;&gt;&lt;/p&gt;
 </content>
     </item>
     
