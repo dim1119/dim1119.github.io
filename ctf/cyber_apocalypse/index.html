@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+    <title>Cyber Apocalypse CTF 2021 :: dim1119&#39;s Blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="HackTheBox Cyber Apocalypse writeup" />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="/ctf/cyber_apocalypse/" />
+
+
+
+
+<link rel="stylesheet" href="/assets/style.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon" href="/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="/img/favicon/orange.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+  
+    <meta name="twitter:site" content="" />
+  
+    <meta name="twitter:creator" content="" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Cyber Apocalypse CTF 2021">
+<meta property="og:description" content="HackTheBox Cyber Apocalypse writeup" />
+<meta property="og:url" content="/ctf/cyber_apocalypse/" />
+<meta property="og:site_name" content="dim1119&#39;s Blog" />
+
+  
+    <meta property="og:image" content="/img/favicon/orange.png">
+  
+
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+
+  <meta property="article:published_time" content="2021-04-29 15:12:49 &#43;0300 EEST" />
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body class="orange">
+
+
+<div class="container center headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    Home
+  </div>
+</a>
+
+    </div>
+    
+      <div class="menu-trigger">menu</div>
+    
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/about/index.html">About me</a></li>
+        
+      
+        
+          <li><a href="/ctf/index.html">CTF</a></li>
+        
+      
+        
+          <li><a href="/hackthebox/index.html">HackTheBox</a></li>
+        
+      
+      
+    
+
+    
+  </ul>
+
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/about/index.html">About me</a></li>
+      
+    
+      
+        <li><a href="/ctf/index.html">CTF</a></li>
+      
+    
+      
+        <li><a href="/hackthebox/index.html">HackTheBox</a></li>
+      
+    
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="post">
+  <h1 class="post-title">
+    <a href="/ctf/cyber_apocalypse/">Cyber Apocalypse CTF 2021</a></h1>
+  <div class="post-meta">
+    
+      <span class="post-date">
+        2021-04-29 
+      </span>
+    
+    
+  </div>
+
+  
+
+  
+
+  
+
+  <div class="post-content"><div>
+        <h1 id="hardware">Hardware<a href="#hardware" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<h2 id="serial-logs">Serial Logs<a href="#serial-logs" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p><img src="/ctf/7e25b8f22c5140299f8feafe8e173d68.png" alt="960a85301ff53b024bc0038757c747d6.png"></p>
+<p>We get a .sal file, so we must use logic analyzer 2.0
+<img src="/ctf/d22a6a739ef54657beaf31c20940e136.png" alt="4fd19d1f44c90805d32590ef5c43be76.png"></p>
+<p>We notice 2 channels, so it must be a 2 channel protocol. When searching for raspberry pi debugging interface we find this site <a href="https://gr.mouser.com/new/ftdi-chip/ftdi-raspberry-pi-interface-modules/">https://gr.mouser.com/new/ftdi-chip/ftdi-raspberry-pi-interface-modules/</a>. It says that the pi offers a UART output.</p>
+<p>We can use the autobaud function to get the baud rate.</p>
+<p><img src="/ctf/14f5c76f231f45d982d2df4b35218262.png" alt="669e13cb20f275064f35753ee67543fb.png"></p>
+<p>The baud rate is 117925.</p>
+<p>Lets use python to parse the data:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> pandas <span style="color:#f92672">as</span> pd
+
+<span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#34;out.csv&#34;</span>) <span style="color:#66d9ef">as</span> csvfile:
+    my_csv <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>read_csv(csvfile)
+    data <span style="color:#f92672">=</span> my_csv[<span style="color:#e6db74">&#39;Value&#39;</span>]<span style="color:#f92672">.</span>to_list()
+
+<span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> data:
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">in</span> i :
+        <span style="color:#66d9ef">print</span>(i,end<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>)
+</code></pre></div><p><img src="/ctf/b18821574d7f45aa9335d14aff3c8118.png" alt="b57c3cad64afebc898c9f4de3ae8741c.png"></p>
+<p>Lets find the new baud rate with autobaud.</p>
+<p><img src="/ctf/a3f1accd51fb46b08ae9568483001e9e.png" alt="45f1a8b95e5d62bc96708328c3597175.png"></p>
+<p>The new baud rate is 74294.</p>
+<p><img src="/ctf/a2700707053b4d7783847999b2d562e7.png" alt="e40d303d1a82fa0220babdb01824f6b0.png"></p>
+<p>flag: <code>CHTB{wh47?!_f23qu3ncy_h0pp1n9_1n_4_532141_p2070c01?!!!52}</code></p>
+<h2 id="compromised">Compromised<a href="#compromised" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p><img src="/ctf/a59de49c5ab0426bb409f06789634aca.png" alt="0535a639c0bfa66053f1449511dac4b6.png"></p>
+<p>Probably i2c since it is a 2 wire protocol.
+<img src="/ctf/6ff3cefed1fa4ee6bc42fcd875def73d.png" alt="ecce17cfd4e02883050dd618ee84c849.png"></p>
+<p><img src="/ctf/cc8e8af269f74609abbb5f500652520b.png" alt="01ae327361424d7d091570fd16dbb903.png"></p>
+<p>Lets decode it:
+<img src="/ctf/a4d7222c87514d9e88f4288387bf1aa2.png" alt="1a91ee80f9fc808df725acab04db1ff9.png"></p>
+<p>Export the data.</p>
+<p>Lets sort into 2 lists using python.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> pandas <span style="color:#f92672">as</span> pd
+
+<span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#34;out2.csv&#34;</span>) <span style="color:#66d9ef">as</span> csvfile:
+    my_csv <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>read_csv(csvfile)
+    data <span style="color:#f92672">=</span> my_csv[<span style="color:#e6db74">&#39;Data&#39;</span>]<span style="color:#f92672">.</span>to_list()
+    address <span style="color:#f92672">=</span> my_csv[<span style="color:#e6db74">&#39;Address&#39;</span>]<span style="color:#f92672">.</span>to_list()
+
+str1<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+str2<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+
+<span style="color:#66d9ef">for</span> location,chars <span style="color:#f92672">in</span> zip(address,data):
+    <span style="color:#66d9ef">if</span> int(location,<span style="color:#ae81ff">16</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0x2C</span>:
+        str1<span style="color:#f92672">+=</span>chr(int(chars,<span style="color:#ae81ff">16</span>))
+    <span style="color:#66d9ef">elif</span> int(location,<span style="color:#ae81ff">16</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0x34</span>:
+        str2<span style="color:#f92672">+=</span>chr(int(chars,<span style="color:#ae81ff">16</span>))
+<span style="color:#66d9ef">print</span>(str1)
+<span style="color:#66d9ef">print</span>(str2)
+</code></pre></div><p>The 2 final lists:
+<img src="/ctf/fc9eb239a5b6466199f956f34b3fa167.png" alt="a063770f4ad0c92a14addef5eead2d77.png"></p>
+<p>flag: <code>CHTB{nu11_732m1n47025_c4n_8234k_4_532141_5y573m!@52)#@%}</code></p>
+<h2 id="secure">Secure<a href="#secure" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p><img src="/ctf/e5323d910d4840caa27f8f9282190d46.png" alt="78a5159af53a5477f2e5454288da7969.png"></p>
+<p>The scenario mentions captured traffic from an sd card while in transit, probably used this one sd card module.
+<img src="/ctf/730d95cac68f44d2b56bcfbb255a86c3.png" alt="fbd4b38d5ee93859cc5ff3e0ace9be17.png"></p>
+<p>The SD card modules uses SPI.
+<img src="/ctf/f039d67a82a74954873059c1e6de4a9e.png" alt="39f326960b0530d65910549b08ba5750.png">
+<img src="/ctf/a184e8f58b3045929ad8605af45ce516.png" alt="39af235363562bc3aeb003b7b5f02a67.png"></p>
+<ul>
+<li>Channel 0 is Master In Slave Out.</li>
+<li>Channel 1 is Master Out Slave In.</li>
+<li>Channel 2 is chip select.</li>
+<li>Channel 3 is clock.</li>
+</ul>
+<p>The flag is in MISO.
+<img src="/ctf/a481cd6b0ce44a20a1de5adabb6a5538.png" alt="2e612234b62da91b14d817a39be59ca1.png"></p>
+<p>Bash one liner to find the flag beginning:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ awk -F <span style="color:#e6db74">&#39;,&#39;</span> <span style="color:#e6db74">&#39;{print $4}&#39;</span> out3.csv | tr -d <span style="color:#e6db74">&#39;\n&#39;</span> | grep <span style="color:#e6db74">&#34;CHTB{&#34;</span>
+MISO<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>01<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>01<span style="color:#ae81ff">\0\0\x</span>01<span style="color:#ae81ff">\x</span>AA<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>01<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>01<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>01<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\0\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\0\x</span>80<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>80<span style="color:#ae81ff">\0\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\0\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FE<span style="color:#ae81ff">\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x</span>02<span style="color:#ae81ff">\x</span>04<span style="color:#ae81ff">\0\x</span>06<span style="color:#ae81ff">\n\x</span>CA<span style="color:#ae81ff">\x</span>CA<span style="color:#ae81ff">\x</span>81<span style="color:#ae81ff">\0\0\0\x</span>7F<span style="color:#ae81ff">\x</span>AF;<span style="color:#ae81ff">\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0</span>U<span style="color:#ae81ff">\x</span>AA<span style="color:#ae81ff">\\</span>xD8<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\0\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FE<span style="color:#ae81ff">\x</span>EB&lt;<span style="color:#ae81ff">\x</span>90MSDOS5.0<span style="color:#ae81ff">\0\x</span>02@<span style="color:#ae81ff">\x</span>02<span style="color:#ae81ff">\0\x</span>02<span style="color:#ae81ff">\0\x</span>02<span style="color:#ae81ff">\0\0\x</span>F8<span style="color:#ae81ff">\x</span>EF<span style="color:#ae81ff">\0</span>?<span style="color:#ae81ff">\0\x</span>FF<span style="color:#ae81ff">\0\x</span>81<span style="color:#ae81ff">\0\0\0\x</span>7F<span style="color:#ae81ff">\x</span>AF;<span style="color:#ae81ff">\0\x</span>80<span style="color:#ae81ff">\0</span><span style="color:#f92672">)</span>J<span style="color:#ae81ff">\x</span>04<span style="color:#ae81ff">\x</span>D0<span style="color:#ae81ff">\x</span>06NO NAME    FAT16   3<span style="color:#ae81ff">\x</span>C9<span style="color:#ae81ff">\x</span>8E<span style="color:#ae81ff">\x</span>D1<span style="color:#ae81ff">\x</span>BC<span style="color:#ae81ff">\x</span>F0<span style="color:#f92672">{</span><span style="color:#ae81ff">\x</span>8E<span style="color:#ae81ff">\x</span>D9<span style="color:#ae81ff">\x</span>B8<span style="color:#ae81ff">\0</span> <span style="color:#ae81ff">\x</span>8E<span style="color:#ae81ff">\x</span>C0<span style="color:#ae81ff">\x</span>FC<span style="color:#ae81ff">\x</span>BD<span style="color:#ae81ff">\0</span>|8N$<span style="color:#f92672">}</span>$<span style="color:#ae81ff">\x</span>8B<span style="color:#ae81ff">\x</span>C1<span style="color:#ae81ff">\x</span>99<span style="color:#ae81ff">\x</span>E8&lt;<span style="color:#ae81ff">\x</span>01r<span style="color:#ae81ff">\x</span>1C<span style="color:#ae81ff">\x</span>83<span style="color:#ae81ff">\x</span>EB:f<span style="color:#ae81ff">\x</span>A1<span style="color:#ae81ff">\x</span>1C|&amp;f;<span style="color:#ae81ff">\x</span>07&amp;<span style="color:#ae81ff">\x</span>8AW<span style="color:#ae81ff">\x</span>FCu<span style="color:#ae81ff">\x</span>06<span style="color:#ae81ff">\x</span>80<span style="color:#ae81ff">\x</span>CA<span style="color:#ae81ff">\x</span>02<span style="color:#ae81ff">\x</span>88V<span style="color:#ae81ff">\x</span>02<span style="color:#ae81ff">\x</span>80<span style="color:#ae81ff">\x</span>C3<span style="color:#ae81ff">\x</span>10s<span style="color:#ae81ff">\x</span>EB3<span style="color:#ae81ff">\x</span>C9<span style="color:#ae81ff">\x</span>8AF<span style="color:#ae81ff">\x</span>10<span style="color:#ae81ff">\x</span>98<span style="color:#ae81ff">\x</span>F7f<span style="color:#ae81ff">\x</span>16<span style="color:#ae81ff">\x</span>03F<span style="color:#ae81ff">\x</span>1C<span style="color:#ae81ff">\x</span>13V<span style="color:#ae81ff">\x</span>1E<span style="color:#ae81ff">\x</span>03F<span style="color:#ae81ff">\x</span>0E<span style="color:#ae81ff">\x</span>13<span style="color:#ae81ff">\x</span>D1<span style="color:#ae81ff">\x</span>8Bv<span style="color:#ae81ff">\x</span>11<span style="color:#e6db74">`</span><span style="color:#ae81ff">\x</span>89F<span style="color:#ae81ff">\x</span>FC<span style="color:#ae81ff">\x</span>89V<span style="color:#ae81ff">\x</span>FE<span style="color:#ae81ff">\x</span>B8 <span style="color:#ae81ff">\0\x</span>F7<span style="color:#ae81ff">\x</span>E6<span style="color:#ae81ff">\x</span>8B^<span style="color:#ae81ff">\x</span>0B<span style="color:#ae81ff">\x</span>03<span style="color:#ae81ff">\x</span>C3H<span style="color:#ae81ff">\x</span>F7<span style="color:#ae81ff">\x</span>F3<span style="color:#ae81ff">\x</span>01F<span style="color:#ae81ff">\x</span>FC<span style="color:#ae81ff">\x</span>11N<span style="color:#ae81ff">\x</span>FEa<span style="color:#ae81ff">\x</span>BF<span style="color:#ae81ff">\0\0\x</span>E8<span style="color:#ae81ff">\x</span>E6<span style="color:#ae81ff">\0</span>r9&amp;8-t<span style="color:#ae81ff">\x</span>17<span style="color:#e6db74">`</span><span style="color:#ae81ff">\x</span>B1<span style="color:#ae81ff">\x</span>0B<span style="color:#ae81ff">\x</span>BE<span style="color:#ae81ff">\x</span>A1<span style="color:#f92672">}</span><span style="color:#ae81ff">\x</span>F3<span style="color:#ae81ff">\x</span>A6at2Nt<span style="color:#ae81ff">\t\x</span>83<span style="color:#ae81ff">\x</span>C7 ;<span style="color:#ae81ff">\x</span>FBr<span style="color:#ae81ff">\x</span>E6<span style="color:#ae81ff">\x</span>EB<span style="color:#ae81ff">\x</span>DC<span style="color:#ae81ff">\x</span>A0<span style="color:#ae81ff">\x</span>FB<span style="color:#f92672">}</span><span style="color:#ae81ff">\x</span>B4<span style="color:#f92672">}</span><span style="color:#ae81ff">\x</span>8B<span style="color:#ae81ff">\x</span>F0<span style="color:#ae81ff">\x</span>AC<span style="color:#ae81ff">\x</span>98@t<span style="color:#ae81ff">\x</span>0CHt<span style="color:#ae81ff">\x</span>13<span style="color:#ae81ff">\x</span>B4<span style="color:#ae81ff">\x</span>0E<span style="color:#ae81ff">\x</span>BB<span style="color:#ae81ff">\x</span>07<span style="color:#ae81ff">\0\x</span>CD<span style="color:#ae81ff">\x</span>10<span style="color:#ae81ff">\x</span>EB<span style="color:#ae81ff">\x</span>EF<span style="color:#ae81ff">\x</span>A0<span style="color:#ae81ff">\x</span>FD<span style="color:#f92672">}</span><span style="color:#ae81ff">\x</span>EB<span style="color:#ae81ff">\x</span>E6<span style="color:#ae81ff">\x</span>A0<span style="color:#ae81ff">\x</span>FC<span style="color:#f92672">}</span><span style="color:#ae81ff">\x</span>EB<span style="color:#ae81ff">\x</span>E1<span style="color:#ae81ff">\x</span>CD<span style="color:#ae81ff">\x</span>16<span style="color:#ae81ff">\x</span>CD<span style="color:#ae81ff">\x</span>19&amp;<span style="color:#ae81ff">\x</span>8BU<span style="color:#ae81ff">\x</span>1AR<span style="color:#ae81ff">\x</span>B0<span style="color:#ae81ff">\x</span>01<span style="color:#ae81ff">\x</span>BB<span style="color:#ae81ff">\0\0\x</span>E8;<span style="color:#ae81ff">\0</span>r<span style="color:#ae81ff">\x</span>E8<span style="color:#f92672">[</span><span style="color:#ae81ff">\x</span>8AV$<span style="color:#ae81ff">\x</span>BE<span style="color:#ae81ff">\x</span>0B|<span style="color:#ae81ff">\x</span>8B<span style="color:#ae81ff">\x</span>FC<span style="color:#ae81ff">\x</span>C7F<span style="color:#ae81ff">\x</span>F0<span style="color:#f92672">=}</span><span style="color:#ae81ff">\x</span>C7F<span style="color:#ae81ff">\x</span>F4<span style="color:#f92672">)}</span><span style="color:#ae81ff">\x</span>8C<span style="color:#ae81ff">\x</span>D9<span style="color:#ae81ff">\x</span>89N<span style="color:#ae81ff">\x</span>F2<span style="color:#ae81ff">\x</span>89N<span style="color:#ae81ff">\x</span>F6<span style="color:#ae81ff">\x</span>C6<span style="color:#ae81ff">\x</span>06<span style="color:#ae81ff">\x</span>96<span style="color:#f92672">}</span><span style="color:#ae81ff">\x</span>CB<span style="color:#ae81ff">\x</span>EA<span style="color:#ae81ff">\x</span>03<span style="color:#ae81ff">\0\0</span> <span style="color:#ae81ff">\x</span>0F<span style="color:#ae81ff">\x</span>B6<span style="color:#ae81ff">\x</span>C8f<span style="color:#ae81ff">\x</span>8BF<span style="color:#ae81ff">\x</span>F8f<span style="color:#ae81ff">\x</span>03F<span style="color:#ae81ff">\x</span>1Cf<span style="color:#ae81ff">\x</span>8B<span style="color:#ae81ff">\x</span>D0f<span style="color:#ae81ff">\x</span>C1<span style="color:#ae81ff">\x</span>EA<span style="color:#ae81ff">\x</span>10<span style="color:#ae81ff">\x</span>EB^<span style="color:#ae81ff">\x</span>0F<span style="color:#ae81ff">\x</span>B6<span style="color:#ae81ff">\x</span>C8JJ<span style="color:#ae81ff">\x</span>8AF<span style="color:#ae81ff">\r</span>2<span style="color:#ae81ff">\x</span>E4<span style="color:#ae81ff">\x</span>F7<span style="color:#ae81ff">\x</span>E2<span style="color:#ae81ff">\x</span>03F<span style="color:#ae81ff">\x</span>FC<span style="color:#ae81ff">\x</span>13V<span style="color:#ae81ff">\x</span>FE<span style="color:#ae81ff">\x</span>EBJRP<span style="color:#ae81ff">\x</span>06Sj<span style="color:#ae81ff">\x</span>01j<span style="color:#ae81ff">\x</span>10<span style="color:#ae81ff">\x</span>91<span style="color:#ae81ff">\x</span>8BF<span style="color:#ae81ff">\x</span>18<span style="color:#ae81ff">\x</span>96<span style="color:#ae81ff">\x</span>923<span style="color:#ae81ff">\x</span>D2<span style="color:#ae81ff">\x</span>F7<span style="color:#ae81ff">\x</span>F6<span style="color:#ae81ff">\x</span>91<span style="color:#ae81ff">\x</span>F7<span style="color:#ae81ff">\x</span>F6B<span style="color:#ae81ff">\x</span>87<span style="color:#ae81ff">\x</span>CA<span style="color:#ae81ff">\x</span>F7v<span style="color:#ae81ff">\x</span>1A<span style="color:#ae81ff">\x</span>8A<span style="color:#ae81ff">\x</span>F2<span style="color:#ae81ff">\x</span>8A<span style="color:#ae81ff">\x</span>E8<span style="color:#ae81ff">\x</span>C0<span style="color:#ae81ff">\x</span>CC<span style="color:#ae81ff">\x</span>02<span style="color:#ae81ff">\n\x</span>CC<span style="color:#ae81ff">\x</span>B8<span style="color:#ae81ff">\x</span>01<span style="color:#ae81ff">\x</span>02<span style="color:#ae81ff">\x</span>80~<span style="color:#ae81ff">\x</span>02<span style="color:#ae81ff">\x</span>0Eu<span style="color:#ae81ff">\x</span>04<span style="color:#ae81ff">\x</span>B4B<span style="color:#ae81ff">\x</span>8B<span style="color:#ae81ff">\x</span>F4<span style="color:#ae81ff">\x</span>8AV$<span style="color:#ae81ff">\x</span>CD<span style="color:#ae81ff">\x</span>13aar<span style="color:#ae81ff">\x</span>0B@u<span style="color:#ae81ff">\x</span>01B<span style="color:#ae81ff">\x</span>03^<span style="color:#ae81ff">\x</span>0BIu<span style="color:#ae81ff">\x</span>06<span style="color:#ae81ff">\x</span>F8<span style="color:#ae81ff">\x</span>C3A<span style="color:#ae81ff">\x</span>BB<span style="color:#ae81ff">\0\0</span><span style="color:#e6db74">`</span>fj<span style="color:#ae81ff">\0\x</span>EB<span style="color:#ae81ff">\x</span>B0BOOTMGR    <span style="color:#ae81ff">\r\n</span>Remove disks or other media.<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\r\n</span>Disk error<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\r\n</span>Press any key to restart<span style="color:#ae81ff">\r\n\0\0\0\0\0\0\0\x</span>AC<span style="color:#ae81ff">\x</span>CB<span style="color:#ae81ff">\x</span>D8U<span style="color:#ae81ff">\x</span>AA<span style="color:#ae81ff">\x</span>16<span style="color:#ae81ff">\x</span>02<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\0\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FE01      TXT <span style="color:#ae81ff">\x</span>10C<span style="color:#ae81ff">\x</span>F5<span style="color:#ae81ff">\x</span>92sPxP<span style="color:#ae81ff">\0\0\x</span>02<span style="color:#ae81ff">\x</span>97wP%<span style="color:#ae81ff">\0</span>s<span style="color:#ae81ff">\0\0\0</span>DATALOG TXT<span style="color:#ae81ff">\0\0\0\0\x</span>08!<span style="color:#f92672">(</span>!<span style="color:#f92672">(</span><span style="color:#ae81ff">\0\0\0\x</span>08!<span style="color:#f92672">(</span><span style="color:#ae81ff">\x</span>07<span style="color:#ae81ff">\0</span>d<span style="color:#ae81ff">\x</span>19<span style="color:#ae81ff">\0\0</span>TEST    TXT<span style="color:#ae81ff">\0\0\0\0\x</span>08!<span style="color:#f92672">(</span>!<span style="color:#f92672">(</span><span style="color:#ae81ff">\0\0\0\x</span>08!<span style="color:#f92672">(</span><span style="color:#ae81ff">\x</span>08<span style="color:#ae81ff">\0</span>^<span style="color:#ae81ff">\0\0\0</span>KEY     TXT<span style="color:#ae81ff">\0\0\0\0\x</span>08!<span style="color:#f92672">(</span>!<span style="color:#f92672">(</span><span style="color:#ae81ff">\0\0\0\x</span>08!<span style="color:#f92672">(</span><span style="color:#ae81ff">\t\0\x</span>B6<span style="color:#ae81ff">\0\0\0</span>SKEY    TXT<span style="color:#ae81ff">\0\0\0\0\x</span>08!<span style="color:#f92672">(</span>!<span style="color:#f92672">(</span><span style="color:#ae81ff">\0\0\0\x</span>08!<span style="color:#f92672">(</span><span style="color:#ae81ff">\n\0</span>j<span style="color:#ae81ff">\0\0\0</span>SECRET  KEY<span style="color:#ae81ff">\0\0\0\0\x</span>08!<span style="color:#f92672">(</span>!<span style="color:#f92672">(</span><span style="color:#ae81ff">\0\0\0\x</span>08!<span style="color:#f92672">(</span><span style="color:#ae81ff">\x</span>0B<span style="color:#ae81ff">\0</span>V<span style="color:#ae81ff">\0\0\0</span>MASTER  KEY<span style="color:#ae81ff">\0\0\0\0\x</span>08!<span style="color:#f92672">(</span>!<span style="color:#f92672">(</span><span style="color:#ae81ff">\0\0\0\x</span>08!<span style="color:#f92672">(</span><span style="color:#ae81ff">\x</span>0C<span style="color:#ae81ff">\0</span>X<span style="color:#ae81ff">\0\0\0</span>A.<span style="color:#ae81ff">\0</span>_<span style="color:#ae81ff">\0</span>0<span style="color:#ae81ff">\0</span>1<span style="color:#ae81ff">\0</span>.<span style="color:#ae81ff">\0\x</span>0F<span style="color:#ae81ff">\0</span>ht<span style="color:#ae81ff">\0</span>x<span style="color:#ae81ff">\0</span>t<span style="color:#ae81ff">\0\0\0\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\0\0\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF<span style="color:#ae81ff">\x</span>FF_0~1    TXT<span style="color:#e6db74">&#34;\0F\x06\x97wPxP\0\0\x06\x97wP\x1F\0\0\x10\0\0\xE5m\0s\0\0\0\xFF\xFF\xFF\xFF\x0F\0\x9A\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\0\0\xFF\xFF\xFF\xFF\xE5.\0T\0e\0m\0p\0\x0F\0\x9Ao\0r\0a\0r\0y\0I\0\0\0t\0e\0\xE5EMPOR~1   \x12\0\x89\x0F\xA8rPrP\0\0\x0F\xA8rP\x16\0\0\x80\0\0\xE5.\0f\0s\0e\0v\0\x0F\0\xDAe\0n\0t\0s\0d\0\0\0\0\0\xFF\xFF\xFF\xFF\xE5SEVEN~1   \x12\0d\xA6vxPxP\0\0\xA6vxP\x05\0\0\x80\0\0\xE50      TXT \x10\xC2\xF5\x92sP6R\0\08\xAEsP\0\0\0\0\0\0A.\0_\01\00\0.\0\x0F\0\xEDt\0x\0t\0\0\0\xFF\xFF\xFF\xFF\0\0\xFF\xFF\xFF\xFF2\x99\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\0\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFECHTB{5P1_15_c0mm0n_0n_m3m02y_d3v1c35_!@52}\r\nCHTB{5P1_15_c0mm0n_0n_m3m02y_d3v1c35_!@52}\r\n\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\xFF\xFF\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\xFF\xFF\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\xFF\xFF\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0A`
+</span></code></pre></div><p><img src="/ctf/997aa526622141e187ab2232f8752ad0.png" alt="b8000496d7894a958537ceff6b4a0f99.png"></p>
+<p>flag: <code>CHTB{5P1_15_c0mm0n_0n_m3m02y_d3v1c35_!@52}</code></p>
+<h2 id="off-the-grid">Off the grid<a href="#off-the-grid" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p><img src="/ctf/6a4818eb0d60439bbf0d83a24c23cb8c.png" alt="ff0550f96f01ea27603ad573e61c4e08.png"></p>
+<p>We discover 6 channels.
+<img src="/ctf/b5687970dac644eea4f6ce248cdeac2b.png" alt="ea2636f3b468df9070751583eb59bf6c.png"></p>
+<p>OLED SH1306 uses SPI/I2C, in this case it is SPI.
+<img src="/ctf/173a66bdaeb54f05b4075a9c87201e31.png" alt="d4e37cd0df24d01657bcd150262358ad.png"></p>
+<ul>
+<li>D1 is clock</li>
+<li>D2 is Chip Select</li>
+<li>D0 is MOSI</li>
+<li>D3 is MISO</li>
+</ul>
+<p>Export the data and save the &ldquo;MISO&rdquo; column signal using awk and run:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> matplotlib <span style="color:#f92672">import</span> pyplot <span style="color:#66d9ef">as</span> plt
+<span style="color:#f92672">import</span> bitmap
+<span style="color:#f92672">import</span> re
+<span style="color:#f92672">from</span> PIL <span style="color:#f92672">import</span> Image, ImageDraw
+<span style="color:#f92672">import</span> numpy <span style="color:#f92672">as</span> np
+
+
+file <span style="color:#f92672">=</span> open(<span style="color:#e6db74">&#34;miso.txt&#34;</span>, <span style="color:#e6db74">&#34;r&#34;</span>)
+pattern <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;0xB[0-7]&#34;</span>
+
+matrx <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>zeros(shape<span style="color:#f92672">=</span>(<span style="color:#ae81ff">128</span>, <span style="color:#ae81ff">64</span>))
+
+dc <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+counter <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>
+page <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+page_counter <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+sequence <span style="color:#f92672">=</span> []
+data <span style="color:#f92672">=</span> []
+<span style="color:#66d9ef">for</span> line <span style="color:#f92672">in</span> file:
+    line <span style="color:#f92672">=</span> line<span style="color:#f92672">.</span>rstrip(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>)
+    sequence<span style="color:#f92672">.</span>append(line)
+    <span style="color:#66d9ef">if</span> dc <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+        <span style="color:#66d9ef">if</span> re<span style="color:#f92672">.</span>match(pattern, line):
+            sequence <span style="color:#f92672">=</span> [line]
+        <span style="color:#66d9ef">elif</span> re<span style="color:#f92672">.</span>match(pattern, sequence[<span style="color:#ae81ff">0</span>]) <span style="color:#f92672">is</span> <span style="color:#f92672">not</span> None <span style="color:#f92672">and</span> line <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;0x02&#34;</span>:
+            sequence<span style="color:#f92672">.</span>append(line)
+        <span style="color:#66d9ef">elif</span> re<span style="color:#f92672">.</span>match(pattern, sequence[<span style="color:#ae81ff">0</span>]) <span style="color:#f92672">is</span> <span style="color:#f92672">not</span> None <span style="color:#f92672">and</span> sequence[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;0x02&#34;</span> <span style="color:#f92672">and</span> line <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;0x10&#34;</span>:
+            sequence<span style="color:#f92672">.</span>append(line)
+            dc <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+            counter <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+    <span style="color:#66d9ef">else</span>:
+        <span style="color:#75715e"># reads data</span>
+        <span style="color:#66d9ef">if</span> counter <span style="color:#f92672">==</span> <span style="color:#ae81ff">128</span>:
+            counter <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+            dc <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+        <span style="color:#66d9ef">else</span>:
+            data<span style="color:#f92672">.</span>append(line)
+            counter <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+file<span style="color:#f92672">.</span>close()
+
+x_pos <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+y_pos <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+count <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+page <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+screen <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+<span style="color:#66d9ef">for</span> num <span style="color:#f92672">in</span> data:
+    bits <span style="color:#f92672">=</span> str(bin(int(num, <span style="color:#ae81ff">16</span>))[<span style="color:#ae81ff">2</span>:]<span style="color:#f92672">.</span>zfill(<span style="color:#ae81ff">8</span>))[::<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>]
+    <span style="color:#66d9ef">for</span> bit <span style="color:#f92672">in</span> bits:
+
+        <span style="color:#66d9ef">try</span>:
+            matrx[x_pos][y_pos] <span style="color:#f92672">=</span> bit
+        <span style="color:#66d9ef">except</span>:
+            exit(<span style="color:#e6db74">&#34;Exited! {} and {} with bit {}&#34;</span><span style="color:#f92672">.</span>format(x_pos,y_pos,bit))
+            
+        <span style="color:#66d9ef">if</span> y_pos<span style="color:#f92672">%</span><span style="color:#ae81ff">8</span> <span style="color:#f92672">==</span>  <span style="color:#ae81ff">7</span> :
+            <span style="color:#66d9ef">if</span> x_pos <span style="color:#f92672">==</span> <span style="color:#ae81ff">127</span>:
+                <span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#34;End of Page {}:{}&#34;</span><span style="color:#f92672">.</span>format(x_pos,y_pos))
+                <span style="color:#66d9ef">if</span> page <span style="color:#f92672">==</span> <span style="color:#ae81ff">7</span>:
+                    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#34;End of Screen&#34;</span>)
+                    plt<span style="color:#f92672">.</span>imshow(matrx[::<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>], interpolation<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;nearest&#39;</span>)
+                    plt<span style="color:#f92672">.</span>gray()
+                    plt<span style="color:#f92672">.</span>savefig(str(screen)<span style="color:#f92672">+</span><span style="color:#e6db74">&#34;.png&#34;</span>)
+                    matrx<span style="color:#f92672">.</span>fill(<span style="color:#ae81ff">0</span>)
+                    x_pos<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
+                    y_pos<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
+                    screen<span style="color:#f92672">+=</span><span style="color:#ae81ff">1</span>
+                    page<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
+                <span style="color:#66d9ef">else</span>:
+                    page <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+                    x_pos <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+                    y_pos <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">+</span>page<span style="color:#f92672">*</span><span style="color:#ae81ff">8</span>
+            <span style="color:#66d9ef">else</span>:
+                x_pos <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+                y_pos <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">+</span>page<span style="color:#f92672">*</span><span style="color:#ae81ff">8</span>
+                <span style="color:#75715e">#print(&#34;End of column&#34;)</span>
+        <span style="color:#66d9ef">else</span>:
+            y_pos <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+
+
+    count <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#34;{} of {} bytes</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">{} screens&#34;</span><span style="color:#f92672">.</span>format(count, len(data),screen<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>))
+</code></pre></div><p><img src="/ctf/ca42acda939b490ca919934e86a1e073.png" alt="1a91fc0c56792a61bf6cc2983557fba3.png">
+<code>CHTB{013d_h4ck1n9_f7w!2^25#}</code></p>
+<h1 id="reverse-engineering">Reverse Engineering<a href="#reverse-engineering" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<h2 id="authenticator">Authenticator<a href="#authenticator" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p><img src="/ctf/9d5cc24237da4cdd96cd79abc0a99af4.png" alt="47857411309ad407897d6ba2635f815a.png"></p>
+<p>Lets dissasemble the file in Ghidra.
+<img src="/ctf/139eef8e2e75490da360bbe825e97d59.png" alt="02452c36e88929c732f68cbd09867aab.png"></p>
+<p><img src="/ctf/3b567d35327342cab5bff94346684936.png" alt="237bf58d6f71c7c79346eabb4c4178c1.png">
+In <code>main()</code> we can easily find that the alien id is 11337.
+This is the disassembled code of <code>checkpin()</code>.
+<img src="/ctf/cf328d94317343c299eca9e249e88d12.png" alt="ea4da23ed694111df9f2bbc0db534519.png"></p>
+<p>The phrase <code>}a:Vh|}a:g}8j=}89gV&lt;p&lt;}:dV8&lt;Vg9}V&lt;9V&lt;:j|{:</code> is xored with the number 9 and compared to our input.
+<img src="/ctf/dc15c7a1417e4755b942d157ad4fa110.png" alt="3b9615f15f1e4b634ee29ee142cadf6a.png">
+<img src="/ctf/ccb3ce45c49b45dd81125bf30e5e0ca9.png" alt="5b678869fa5e889ec2b91bcd93c7bd4c.png"></p>
+<p><code>CHTB{th3_auth3nt1c4t10n_5y5t3m_15_n0t_50_53cur3}</code></p>
+<h2 id="passphrase">Passphrase<a href="#passphrase" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p><img src="/ctf/6dd169dc47e143ce87bb179b1e6e3428.png" alt="e36432c98e51ce58bcad7c91402f1a85.png"></p>
+<p>The passphrase is generated dynamically on the stack, so we need to dynamically analyze the executable.
+<img src="/ctf/34adfcda7211476d82a05f40480e4afa.png" alt="96821f3a19a06c57118b1d4b59722a9b.png"></p>
+<p>Lets use IDA.
+After setting a breakpoint on the last character mov of the passphrase and opening the stack view:
+<img src="/ctf/a5308541578449e6ba72622bc6a1f8bd.png" alt="afd071ef0ab32f9c0f087b9e3ca69975.png"></p>
+<p>flag: <code>CHTB{3xtr4t3rR3stR14L5_VS_hum4n5}</code></p>
+<h1 id="web">Web<a href="#web" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<h2 id="inspector-gadget">Inspector Gadget<a href="#inspector-gadget" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p><img src="/ctf/9c37c8d90ee54b889e00c86e11b7f0df.png" alt="b836076a763a9fcc198b5b9b9498ebc7.png"></p>
+<p>We find parts of the flag in the main html page, in main.css and in main.js.</p>
+<p>flag: <code>CHTB{1nsp3ction_c4n_r3ve4l_us3full_1nf0rm4tion}</code></p>
+
+      </div></div>
+
+  
+
+  
+
+</div>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2021 Powered by <a href="http://gohugo.io">Hugo</a></span>
+    
+        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
+      </div>
+  </div>
+</footer>
+
+<script src="/assets/main.js"></script>
+<script src="/assets/prism.js"></script>
+
+
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>
